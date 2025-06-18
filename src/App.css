@@ -1,42 +1,79 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
+/* App-specific styles for r2r.ai chatbot */
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Additional responsive styles */
+@media (max-width: 768px) {
+  .chat-header {
+    padding: 0.75rem;
   }
-  to {
-    transform: rotate(360deg);
+  
+  .header-content {
+    padding: 0;
+  }
+  
+  .chat-title {
+    font-size: 1.25rem;
+  }
+  
+  .chat-main {
+    padding: 0 0.5rem;
+  }
+  
+  .messages-container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .message {
+    gap: 0.5rem;
+  }
+  
+  .message-avatar {
+    width: 35px;
+    height: 35px;
+    font-size: 1.25rem;
+  }
+  
+  .input-container {
+    padding: 0.75rem;
+  }
+  
+  .input-wrapper {
+    padding: 0.5rem;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Dark theme adjustments for AWS Amplify UI components */
+.amplify-authenticator {
+  --amplify-colors-background-primary: #0a0a0a;
+  --amplify-colors-background-secondary: #1a1a1a;
+  --amplify-colors-font-primary: #e0e0e0;
+  --amplify-colors-font-secondary: #b0b0b0;
+  --amplify-colors-brand-primary-60: #00ffff;
+  --amplify-colors-brand-primary-80: #ff00ff;
 }
 
-.card {
-  padding: 2em;
+.amplify-authenticator [data-amplify-authenticator] {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  min-height: 100vh;
 }
 
-.read-the-docs {
-  color: #888;
+.amplify-card {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+}
+
+.amplify-button[data-variation="primary"] {
+  background: linear-gradient(45deg, #00ffff, #ff00ff) !important;
+  border: none !important;
+}
+
+.amplify-input {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #e0e0e0 !important;
+}
+
+.amplify-input:focus {
+  border-color: #00ffff !important;
+  box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.2) !important;
 }

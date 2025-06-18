@@ -65,7 +65,7 @@ npm install
 ```bash
 npx ampx sandbox \
     --outputs-format json \
-    --outputs-out-dir ./src
+    # --outputs-out-dir ./src
 
 rm -rf ./src/models && \
     npx ampx generate graphql-client-code \
