@@ -17,9 +17,11 @@ function App() {
 
   useEffect(() => {
     client.models.Message.observeQuery().subscribe({
-      next: (data) => setMessages([...data.items].sort((a, b) =>
-        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-      )),
+      next: (data) => setMessages([...data.items].sort((a, b) => {
+        const aTime = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+        const bTime = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+        return aTime - bTime;
+      })),
     });
   }, []);
 
@@ -91,7 +93,7 @@ function App() {
                     <div className="message-content">
                       <div className="message-text">{message.content}</div>
                       <div className="message-time">
-                        {new Date(message.timestamp).toLocaleTimeString()}
+                        {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : 'Unknown time'}
                       </div>
                     </div>
                   </div>
