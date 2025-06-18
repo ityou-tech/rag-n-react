@@ -32,22 +32,43 @@ function App() {
     setInputMessage("");
     setIsLoading(true);
 
-    // Create user message
-    await client.models.Message.create({
-      content: userMessage,
-      role: "user",
-      timestamp: new Date().toISOString(),
-    });
-
-    // Simulate AI response (replace with actual AI integration)
-    setTimeout(async () => {
+    try {
+      // Create user message
       await client.models.Message.create({
-        content: `Thanks for your message: "${userMessage}". I'm r2r.ai, your AI assistant! How can I help you today?`,
-        role: "assistant",
+        content: userMessage,
+        role: "user",
         timestamp: new Date().toISOString(),
       });
+
+      // Simulate AI response (replace with actual AI integration)
+      setTimeout(async () => {
+        try {
+          await client.models.Message.create({
+            content: `Thanks for your message: "${userMessage}". I'm r2r.ai, your AI assistant! How can I help you today?`,
+            role: "assistant",
+            timestamp: new Date().toISOString(),
+          });
+        } catch (error) {
+          console.error('Error creating AI response:', error);
+          // Create error message for user
+          try {
+            await client.models.Message.create({
+              content: "Sorry, I encountered an error processing your message. Please try again.",
+              role: "assistant",
+              timestamp: new Date().toISOString(),
+            });
+          } catch (innerError) {
+            console.error('Error creating error message:', innerError);
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      }, 1000);
+    } catch (error) {
+      console.error('Error creating user message:', error);
       setIsLoading(false);
-    }, 1000);
+      // You could add a toast notification here or set an error state
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
