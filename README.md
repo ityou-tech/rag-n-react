@@ -15,7 +15,7 @@ This project is ideal for building intelligent assistants, customer support bots
 
 ---
 
-## 🧱 Tech Stack
+## 🧱 Tech stack
 
 | Layer        | Tech                                |
 |--------------|-------------------------------------|
@@ -30,7 +30,7 @@ This project is ideal for building intelligent assistants, customer support bots
 
 ---
 
-## 💡 Key Features
+## 💡 Key features
 
 - 🗣 Conversational AI with multi-turn memory
 - 🔎 Retrieval-Augmented Generation (RAG) for fact-based answers
@@ -41,7 +41,7 @@ This project is ideal for building intelligent assistants, customer support bots
 
 ---
 
-## 🛠️ Getting Started
+## 🛠️ Getting started
 
 ### Prerequisites
 
@@ -51,22 +51,32 @@ This project is ideal for building intelligent assistants, customer support bots
 - AWS Bedrock API key or ...
 - Vector DB (...)
 
-### 1. Clone the Repo
+### 1. Clone the repo
 
 ```bash
 gh repo clone ityou-tech/rags-to-riches-ai
 cd rags-to-riches-ai
 npm install
+# optional: npm audit fix
 ````
 
-### 2. Set Up Amplify
+### 2. Setup Amplify sandbox environment
 
 ```bash
-npx ampx init
-npx ampx pull
+npx ampx sandbox \
+    --outputs-format json \
+    --outputs-out-dir ./src
+
+rm -rf ./src/models && \
+    npx ampx generate graphql-client-code \
+    --format modelgen \
+    --model-target javascript \
+    --out ./src/models
 ```
 
-### 3. Start Local Dev
+Amplify Gen 2 handles end-to-end fullstack development.
+
+### 3. Start local development
 
 ```bash
 npm run dev
@@ -98,23 +108,6 @@ Agents can be extended with:
 * Internal APIs
 
 Define tools as simple functions with schema and purpose. Agent chooses them when needed.
-
----
-
-## 📦 Deployment
-
-Deploy locally or connect GitHub to Amplify Console:
-
-```bash
-npx ampx deploy
-```
-
-Amplify Gen 2 handles:
-
-* Hosting
-* Auth
-* Function deployment
-* Environment management
 
 ---
 
