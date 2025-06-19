@@ -1,10 +1,10 @@
-# 🧠 rags-to-riches-ai
+# 🧠 ragentic.ai
 
 > From sparse knowledge to smart action — an agentic AI chatbot that thinks, retrieves, and acts.
 
 ## 🚀 Overview
 
-**rags-to-riches-ai** is a modern, fullstack AI chatbot built using:
+**ragentic.ai** is a modern, fullstack AI chatbot built using:
 
 - 🧠 **Agentic AI** — gives the bot reasoning and decision-making ability
 - 🔍 **RAG (Retrieval-Augmented Generation)** — fetches contextual data on demand
@@ -54,8 +54,8 @@ This project is ideal for building intelligent assistants, customer support bots
 ### 1. Clone the repo
 
 ```bash
-gh repo clone ityou-tech/rags-to-riches-ai
-cd rags-to-riches-ai
+gh repo clone ityou-tech/ragentic.ai
+cd ragentic.ai
 npm install
 # optional: npm audit fix
 ````
