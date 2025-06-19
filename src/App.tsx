@@ -44,7 +44,7 @@ function App() {
       setTimeout(async () => {
         try {
           await client.models.Message.create({
-            content: `Thanks for your message: "${userMessage}". I'm ragentic.ai, your AI assistant! How can I help you today?`,
+            content: `Thanks for your message: "${userMessage}". I'm rag-n-react, your AI assistant! How can I help you today?`,
             role: "assistant",
             timestamp: new Date().toISOString(),
           });
@@ -86,7 +86,7 @@ function App() {
             <div className="header-content">
               <h1 className="chat-title">
                 <span className="logo">🤖</span>
-                ragentic.ai
+                rag-n-react
               </h1>
               <button onClick={signOut} className="logout-btn">
                 Logout
@@ -99,7 +99,7 @@ function App() {
               {messages.length === 0 ? (
                 <div className="welcome-message">
                   <div className="welcome-icon">👋</div>
-                  <h2>Welcome to ragentic.ai!</h2>
+                  <h2>Welcome to rag-n-react!</h2>
                   <p>Hello {user?.username}, I'm your AI assistant. Ask me anything!</p>
                 </div>
               ) : (

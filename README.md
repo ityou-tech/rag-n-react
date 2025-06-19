@@ -1,10 +1,10 @@
-# 🧠 ragentic.ai
+# 🧠 rag-n-react
 
 > From sparse knowledge to smart action — an agentic AI chatbot that thinks, retrieves, and acts.
 
 ## 🚀 Overview
 
-**ragentic.ai** is a modern, fullstack AI chatbot built using:
+**rag-n-react** is a modern, fullstack AI chatbot built using:
 
 - 🧠 **Agentic AI** — gives the bot reasoning and decision-making ability
 - 🔍 **RAG (Retrieval-Augmented Generation)** — fetches contextual data on demand
@@ -54,8 +54,8 @@ This project is ideal for building intelligent assistants, customer support bots
 ### 1. Clone the repo
 
 ```bash
-gh repo clone ityou-tech/ragentic.ai
-cd ragentic.ai
+gh repo clone ityou-tech/rag-n-react
+cd rag-n-react
 npm install
 # optional: npm audit fix
 ````
