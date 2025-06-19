@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "deploy-sbx": "npx ampx sandbox --outputs-format dart --outputs-out-dir lib",
-    "gen-models": "rm -rf lib/models && npx ampx generate graphql-client-code --format modelgen --model-target dart --out lib/models",
+    "deploy-sbx": "npx ampx sandbox --outputs-format dart",
+    "gen-models": "rm -rf ./src/models && npx ampx generate graphql-client-code --format modelgen --model-target javascript --out ./src/models",
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
