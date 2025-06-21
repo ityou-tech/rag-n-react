@@ -1,5 +1,5 @@
-import { Authenticator, useAuthenticator, useTheme } from '@aws-amplify/ui-react';
-import { View, Image, Text, Heading, Button } from '@aws-amplify/ui-react';
+import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
+import { View, Heading, Button } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import { client } from './client';
 import { useState, useEffect, useRef } from 'react';
