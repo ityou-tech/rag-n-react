@@ -2,10 +2,6 @@
 
 /* Additional responsive styles */
 @media (max-width: 768px) {
-  .chat-header {
-    padding: 0.75rem;
-  }
-  
   .header-content {
     padding: 0;
   }

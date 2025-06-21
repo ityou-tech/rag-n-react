@@ -5,6 +5,42 @@ import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 export const model = 'amazon.nova-micro-v1:0';
 export const crossRegionModel = `eu.${model}`;
 
+// TODO: eventually fix IAM permissions for the cross-region model with code-first
+// The following needs to be added manually in the 'amplify-ragnreact-<yourname>-ChatDefaultConversationHa-<someid>>' role inline policy:
+// {
+//     "Version": "2012-10-17",
+//     "Statement": [
+//         {
+//             "Effect": "Allow",
+//             "Action": [
+//                 "bedrock:InvokeModel",
+//                 "bedrock:InvokeModelWithResponseStream"
+//             ],
+//             "Resource": [
+//                 "arn:aws:bedrock:eu-central-1:123456789123:inference-profile/eu.amazon.nova-micro-v1:0"
+//             ]
+//         },
+//         {
+//             "Effect": "Allow",
+//             "Action": [
+//                 "bedrock:InvokeModel",
+//                 "bedrock:InvokeModelWithResponseStream"
+//             ],
+//             "Resource": [
+//                 "arn:aws:bedrock:eu-north-1::foundation-model/amazon.nova-micro-v1:0",
+//                 "arn:aws:bedrock:eu-west-1::foundation-model/amazon.nova-micro-v1:0",  
+//                 "arn:aws:bedrock:eu-west-3::foundation-model/amazon.nova-micro-v1:0",  
+//                 "arn:aws:bedrock:eu-central-1::foundation-model/amazon.nova-micro-v1:0"
+//             ],
+//             "Condition": {
+//                 "StringLike": {
+//                     "bedrock:InferenceProfileArn": "arn:aws:bedrock:eu-central-1:123456789123:inference-profile/eu.amazon.nova-micro-v1:0"
+//                 }
+//             }
+//         }
+//     ]
+// }
+
 /* ---------- schema -------------------------------------------------------- */
 
 const schema = a.schema({
