@@ -1,42 +1,40 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
-// Custom type: platform feature enablement
-const PlatformUsageType = a.customType({
-  etlEnabled: a.boolean(),
-  dwhEnabled: a.boolean(),
-  biEnabled: a.boolean(),
-  activatedAt: a.datetime()
-});
+/* ---------- cross-region inference -------------------------------------------------- */
 
-// Schema definition
+export const model = 'amazon.nova-micro-v1:0';
+export const crossRegionModel = `eu.${model}`;
+
+/* ---------- schema -------------------------------------------------------- */
+
 const schema = a.schema({
-  Message: a
-    .model({
-      content: a.string(),
-      role: a.string(), // 'user' or 'assistant'
-      timestamp: a.datetime(),
+  chat: a
+    .conversation({
+      aiModel: {
+        resourcePath: crossRegionModel,
+      },
+      systemPrompt: "You are a helpful assistant. Always give complete answers.",
     })
-    .authorization((allow) => [allow.owner()]),
+    .authorization((allow) => allow.owner()),
 
-  CustomerTeam: a
-    .model({
-      teamId: a.string().required(),
-      teamName: a.string().required(),
-      companyName: a.string().required(),
-      industry: a.string(), // e.g. 'technology', 'finance'
-      teamSize: a.integer(),
-      teamLeadName: a.string().required(),
-      teamLeadEmail: a.email().required(),
-      teamLeadPhone: a.string(),
-      onboardingCompleted: a.boolean().default(false),
-      features: PlatformUsageType,
-      subscriptionPlan: a.string(), // e.g. 'bronze', 'silver', 'gold'
-      subscriptionStatus: a.string(), // 'active', 'trial', 'cancelled'
-      contractValue: a.float(),
-      renewalDate: a.date(),
+  generateRecipe: a
+    .generation({
+      aiModel: {
+        resourcePath: crossRegionModel,
+      },
+      systemPrompt: "You are a helpful assistant that generates recipes.",
     })
-    .identifier(["teamId"])
-    .authorization((allow) => [allow.owner()])
+    .arguments({
+      description: a.string(),
+    })
+    .returns(
+      a.customType({
+        name: a.string(),
+        ingredients: a.string().array(),
+        instructions: a.string(),
+      }),
+    )
+    .authorization((allow) => allow.authenticated()),
 });
 
 export type Schema = ClientSchema<typeof schema>;
