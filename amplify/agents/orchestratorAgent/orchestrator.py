@@ -2,7 +2,11 @@ import logging
 from typing import Dict, Any, Optional
 from tools.agent_invoker import invokeAgent
 from tools.prompt_loader import get_orchestrator_system_prompt
-from security import securityPipeline
+from security import (
+    securityPipeline,
+    process_security_result,
+    validate_processed_payload,
+)
 from strands import Agent
 
 # Configure logging
@@ -42,66 +46,6 @@ def _validate_payload_input(payload: str) -> None:
     if not payload or not isinstance(payload, str):
         logger.error(f"Invalid payload type or value: {type(payload)}")
         raise ValueError("Payload must be a non-empty string")
-
-
-def _process_security_result(
-    security_result: Dict[str, Any],
-) -> Optional[Dict[str, Any]]:
-    """
-    Process security pipeline result and return appropriate response.
-
-    Args:
-        security_result: Result from security pipeline
-
-    Returns:
-        dict: Error response if security failed, None if approved
-    """
-    # Check if security pipeline failed with error status
-    if security_result["status"] == "error":
-        logger.error(
-            f"Security pipeline system error: {security_result.get('error', 'Unknown error')}"
-        )
-        return {
-            "status": "error",
-            "error": "Security pipeline system failure",
-            "details": security_result,
-        }
-
-    # Check if security validation was rejected
-    if security_result["status"] != "approved":
-        logger.warning(
-            f"Security validation failed: {security_result.get('error', 'Unknown reason')}"
-        )
-        return {
-            "status": "rejected",
-            "error": "Security validation failed",
-            "details": security_result,
-        }
-
-    return None  # Security approved
-
-
-def _validate_processed_payload(
-    processed_payload: str, security_result: Dict[str, Any]
-) -> Optional[Dict[str, Any]]:
-    """
-    Validate the processed payload from security pipeline.
-
-    Args:
-        processed_payload: The processed payload from security
-        security_result: Security result for error details
-
-    Returns:
-        dict: Error response if payload is invalid, None if valid
-    """
-    if not processed_payload:
-        logger.error("Security pipeline returned empty processed payload")
-        return {
-            "status": "error",
-            "error": "Processed payload is empty after security validation",
-            "details": security_result,
-        }
-    return None  # Payload is valid
 
 
 def _handle_agent_invocation_error(e: Exception) -> Dict[str, Any]:
@@ -156,13 +100,13 @@ def invokeOrchestratorAgent(agent, payload: str) -> Dict[str, Any]:
         security_result = securityPipeline(payload)
 
         # Process security result
-        security_error = _process_security_result(security_result)
+        security_error = process_security_result(security_result)
         if security_error:
             return security_error
 
         # Validate processed payload
         processed_payload = security_result["processed_prompt"]
-        payload_error = _validate_processed_payload(processed_payload, security_result)
+        payload_error = validate_processed_payload(processed_payload, security_result)
         if payload_error:
             return payload_error
 

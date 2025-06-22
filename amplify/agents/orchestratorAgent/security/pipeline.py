@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 # Configure logging for security module
 logger = logging.getLogger(__name__)
@@ -64,3 +64,63 @@ def securityPipeline(prompt: str) -> Dict[str, Any]:
             "risk_level": "high",
             "error": f"Security pipeline failed: {str(e)}",
         }
+
+
+def process_security_result(
+    security_result: Dict[str, Any],
+) -> Optional[Dict[str, Any]]:
+    """
+    Process security pipeline result and return appropriate response.
+
+    Args:
+        security_result: Result from security pipeline
+
+    Returns:
+        dict: Error response if security failed, None if approved
+    """
+    # Check if security pipeline failed with error status
+    if security_result["status"] == "error":
+        logger.error(
+            f"Security pipeline system error: {security_result.get('error', 'Unknown error')}"
+        )
+        return {
+            "status": "error",
+            "error": "Security pipeline system failure",
+            "details": security_result,
+        }
+
+    # Check if security validation was rejected
+    if security_result["status"] != "approved":
+        logger.warning(
+            f"Security validation failed: {security_result.get('error', 'Unknown reason')}"
+        )
+        return {
+            "status": "rejected",
+            "error": "Security validation failed",
+            "details": security_result,
+        }
+
+    return None  # Security approved
+
+
+def validate_processed_payload(
+    processed_payload: str, security_result: Dict[str, Any]
+) -> Optional[Dict[str, Any]]:
+    """
+    Validate the processed payload from security pipeline.
+
+    Args:
+        processed_payload: The processed payload from security
+        security_result: Security result for error details
+
+    Returns:
+        dict: Error response if payload is invalid, None if valid
+    """
+    if not processed_payload:
+        logger.error("Security pipeline returned empty processed payload")
+        return {
+            "status": "error",
+            "error": "Processed payload is empty after security validation",
+            "details": security_result,
+        }
+    return None  # Payload is valid
