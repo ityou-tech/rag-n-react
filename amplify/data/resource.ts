@@ -1,19 +1,76 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
-/*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any user authenticated via an API key can "create", "read",
-"update", and "delete" any "Todo" records.
-=========================================================================*/
+/* ---------- cross-region inference -------------------------------------------------- */
+
+export const model = 'amazon.nova-micro-v1:0';
+export const crossRegionModel = `eu.${model}`;
+
+// TODO: eventually fix IAM permissions for the cross-region model with code-first
+// The following needs to be added manually in the 'amplify-ragnreact-<yourname>-ChatDefaultConversationHa-<someid>>' role inline policy:
+// {
+//     "Version": "2012-10-17",
+//     "Statement": [
+//         {
+//             "Effect": "Allow",
+//             "Action": [
+//                 "bedrock:InvokeModel",
+//                 "bedrock:InvokeModelWithResponseStream"
+//             ],
+//             "Resource": [
+//                 "arn:aws:bedrock:eu-central-1:123456789123:inference-profile/eu.amazon.nova-micro-v1:0"
+//             ]
+//         },
+//         {
+//             "Effect": "Allow",
+//             "Action": [
+//                 "bedrock:InvokeModel",
+//                 "bedrock:InvokeModelWithResponseStream"
+//             ],
+//             "Resource": [
+//                 "arn:aws:bedrock:eu-north-1::foundation-model/amazon.nova-micro-v1:0",
+//                 "arn:aws:bedrock:eu-west-1::foundation-model/amazon.nova-micro-v1:0",  
+//                 "arn:aws:bedrock:eu-west-3::foundation-model/amazon.nova-micro-v1:0",  
+//                 "arn:aws:bedrock:eu-central-1::foundation-model/amazon.nova-micro-v1:0"
+//             ],
+//             "Condition": {
+//                 "StringLike": {
+//                     "bedrock:InferenceProfileArn": "arn:aws:bedrock:eu-central-1:123456789123:inference-profile/eu.amazon.nova-micro-v1:0"
+//                 }
+//             }
+//         }
+//     ]
+// }
+
+/* ---------- schema -------------------------------------------------------- */
+
 const schema = a.schema({
-  Message: a
-    .model({
-      content: a.string(),
-      role: a.string(), // 'user' or 'assistant'
-      timestamp: a.datetime(),
+  chat: a
+    .conversation({
+      aiModel: {
+        resourcePath: crossRegionModel,
+      },
+      systemPrompt: "You are a helpful assistant. Always give complete answers.",
     })
-    .authorization((allow) => [allow.owner()]),
+    .authorization((allow) => allow.owner()),
+
+  generateRecipe: a
+    .generation({
+      aiModel: {
+        resourcePath: crossRegionModel,
+      },
+      systemPrompt: "You are a helpful assistant that generates recipes.",
+    })
+    .arguments({
+      description: a.string(),
+    })
+    .returns(
+      a.customType({
+        name: a.string(),
+        ingredients: a.string().array(),
+        instructions: a.string(),
+      }),
+    )
+    .authorization((allow) => allow.authenticated()),
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -24,32 +81,3 @@ export const data = defineData({
     defaultAuthorizationMode: "userPool",
   },
 });
-
-/*== STEP 2 ===============================================================
-Go to your frontend source code. From your client-side code, generate a
-Data client to make CRUDL requests to your table. (THIS SNIPPET WILL ONLY
-WORK IN THE FRONTEND CODE FILE.)
-
-Using JavaScript or Next.js React Server Components, Middleware, Server 
-Actions or Pages Router? Review how to generate Data clients for those use
-cases: https://docs.amplify.aws/gen2/build-a-backend/data/connect-to-API/
-=========================================================================*/
-
-/*
-"use client"
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
-
-const client = generateClient<Schema>() // use this Data client for CRUDL requests
-*/
-
-/*== STEP 3 ===============================================================
-Fetch records from the database and use them in your frontend component.
-(THIS SNIPPET WILL ONLY WORK IN THE FRONTEND CODE FILE.)
-=========================================================================*/
-
-/* For example, in a React component, you can use this snippet in your
-  function's RETURN statement */
-// const { data: todos } = await client.models.Todo.list()
-
-// return <ul>{todos.map(todo => <li key={todo.id}>{todo.content}</li>)}</ul>

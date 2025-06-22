@@ -1,141 +1,32 @@
-import { useEffect, useState } from "react";
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
-import { Authenticator } from '@aws-amplify/ui-react';
-import { Amplify } from 'aws-amplify';
-import outputs from '../amplify_outputs.json';
-import '@aws-amplify/ui-react/styles.css';
+import { useEffect } from 'react';
+import AuthenticatorWrapper from './components/AuthenticatorWrapper';
+import AuthHeader from './components/AuthHeader';
+import ChatBot from './components/ChatBot';
+import { THEME_COLORS } from './constants';
+import './App.css';
 
-Amplify.configure(outputs);
-
-const client = generateClient<Schema>();
-
-function App() {
-  const [messages, setMessages] = useState<Array<Schema["Message"]["type"]>>([]);
-  const [inputMessage, setInputMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
+export default function App() {
+  // Set body background color properly
   useEffect(() => {
-    client.models.Message.observeQuery().subscribe({
-      next: (data) => setMessages([...data.items].sort((a, b) =>
-        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-      )),
-    });
+    const originalBackground = document.body.style.backgroundColor;
+    document.body.style.backgroundColor = THEME_COLORS.background;
+    
+    return () => {
+      document.body.style.backgroundColor = originalBackground;
+    };
   }, []);
 
-  const sendMessage = async () => {
-    if (!inputMessage.trim() || isLoading) return;
-    
-    const userMessage = inputMessage.trim();
-    setInputMessage("");
-    setIsLoading(true);
-
-    // Create user message
-    await client.models.Message.create({
-      content: userMessage,
-      role: "user",
-      timestamp: new Date().toISOString(),
-    });
-
-    // Simulate AI response (replace with actual AI integration)
-    setTimeout(async () => {
-      await client.models.Message.create({
-        content: `Thanks for your message: "${userMessage}". I'm r2r.ai, your AI assistant! How can I help you today?`,
-        role: "assistant",
-        timestamp: new Date().toISOString(),
-      });
-      setIsLoading(false);
-    }, 1000);
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
-
   return (
-    <Authenticator>
+    <AuthenticatorWrapper>
       {({ signOut, user }) => (
-        <div className="chat-container">
-          <header className="chat-header">
-            <div className="header-content">
-              <h1 className="chat-title">
-                <span className="logo">🤖</span>
-                r2r.ai
-              </h1>
-              <button onClick={signOut} className="logout-btn">
-                Logout
-              </button>
-            </div>
-          </header>
-
-          <main className="chat-main">
-            <div className="messages-container">
-              {messages.length === 0 ? (
-                <div className="welcome-message">
-                  <div className="welcome-icon">👋</div>
-                  <h2>Welcome to r2r.ai!</h2>
-                  <p>Hello {user?.username}, I'm your AI assistant. Ask me anything!</p>
-                </div>
-              ) : (
-                messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`message ${message.role === 'user' ? 'user-message' : 'ai-message'}`}
-                  >
-                    <div className="message-avatar">
-                      {message.role === 'user' ? '👤' : '🤖'}
-                    </div>
-                    <div className="message-content">
-                      <div className="message-text">{message.content}</div>
-                      <div className="message-time">
-                        {new Date(message.timestamp).toLocaleTimeString()}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-              {isLoading && (
-                <div className="message ai-message">
-                  <div className="message-avatar">🤖</div>
-                  <div className="message-content">
-                    <div className="typing-indicator">
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="input-container">
-              <div className="input-wrapper">
-                <textarea
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Type your message..."
-                  className="message-input"
-                  rows={1}
-                  disabled={isLoading}
-                />
-                <button
-                  onClick={sendMessage}
-                  disabled={!inputMessage.trim() || isLoading}
-                  className="send-button"
-                >
-                  <span className="send-icon">🚀</span>
-                </button>
-              </div>
-            </div>
-          </main>
-        </div>
+        <main>
+          <AuthHeader
+            username={user?.username}
+            onSignOut={signOut || (() => {})}
+          />
+          <ChatBot />
+        </main>
       )}
-    </Authenticator>
+    </AuthenticatorWrapper>
   );
 }
-
-export default App;

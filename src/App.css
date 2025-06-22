@@ -1,11 +1,7 @@
-/* App-specific styles for r2r.ai chatbot */
+/* App-specific styles for rag-n-react chatbot */
 
 /* Additional responsive styles */
 @media (max-width: 768px) {
-  .chat-header {
-    padding: 0.75rem;
-  }
-  
   .header-content {
     padding: 0;
   }
