@@ -1,4 +1,3 @@
-import React from 'react';
 import { THEME_COLORS } from '../../constants';
 
 interface WelcomeScreenProps {

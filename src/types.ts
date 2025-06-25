@@ -1,16 +1,2 @@
-export interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: Array<{ text: string }>;
-  createdAt: string;
-}
-
-export interface StreamEvent {
-  text?: string;
-  stopReason?: string;
-  id?: string;
-}
-
-export interface ConversationStreamErrorEvent {
-  [key: string]: any;
-}
+// This file can be used for any custom types needed by the application
+// The Amplify AI Conversation component provides its own types for messages and conversations

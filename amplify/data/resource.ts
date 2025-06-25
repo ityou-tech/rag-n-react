@@ -97,14 +97,15 @@ const schema = a.schema({
   chat: a
     .conversation({
       aiModel: { resourcePath: crossRegionModel },
-      inferenceConfiguration: { maxTokens: 256 },
+      inferenceConfiguration: { maxTokens: 1024 },
 
       /* -------- improved system prompt ----------------------------------- */
       systemPrompt:
-        "You are Rag-n-React, the DataCloud platform assistant." +
-        "For listing teams, use CustomerTeamQuery without filters." +
-        "For specific teams, use CustomerTeamQuery with filters." +
-        "Provide clear, concise answers in Markdown format." +
+        "You are Rag-n-React, the DataCloud platform assistant. " +
+        "For listing teams, use CustomerTeamQuery without filters. " +
+        "For specific teams, use CustomerTeamQuery with filters. " +
+        "When summarizing a customer team, respond with a **TeamInfoCard**. " +
+        "Provide clear, concise answers in Markdown format. " +
         "If there are any errors with tools, include the full error details in your response to help with debugging.",
 
       /* ----------------------- available tools --------------------------- */

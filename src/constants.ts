@@ -1,8 +1,3 @@
-export const MESSAGE_IDS = {
-  TEMP_AI: 'temp-ai',
-  STREAMING_AI: 'streaming-ai'
-} as const;
-
 export const THEME_COLORS = {
   primary: '#3b82f6',
   secondary: '#64748b',
