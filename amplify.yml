@@ -4,10 +4,8 @@ backend:
     build:
       commands:
         - npm install -g pnpm
-        # Set pnpm store directory for better caching
-        - pnpm config set store-dir .pnpm-store
         # Install with CI-specific optimizations
-        - pnpm install --frozen-lockfile --prefer-offline
+        - pnpm install --frozen-lockfile
         - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
 frontend:
   phases:
@@ -18,7 +16,3 @@ frontend:
     baseDirectory: dist
     files:
       - '**/*'
-  cache:
-    paths:
-      - .pnpm-store/**/*
-      - node_modules/**/*
