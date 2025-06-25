@@ -1,4 +1,3 @@
-// recourse.ts
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
 /* -------------------------------------------------------------------------- */
@@ -9,7 +8,7 @@ export const model = "amazon.nova-micro-v1:0";
 export const crossRegionModel = `eu.${model}`;
 
 // NOTE ──────────────────────────────────────────────────────────────────────
-// For cross-region Bedrock access you still need the inline-policy snippet shown below.
+// For cross-region Bedrock access you still need to edit the inline-policy.
 // The below IAM statement is an example for EU regions, adjust the region and account ID as needed.
 // This is required to allow the `ChatDefaultConversationHandler` role to invoke the model
 // Change the 'amplify-ragnreact-<yourname>-ChatDefaultConversationHa-<someid>>' role inline policy to include the following statement:
@@ -55,7 +54,6 @@ const PlatformUsageType = a.customType({
   etlEnabled: a.boolean(),
   dwhEnabled: a.boolean(),
   biEnabled: a.boolean(),
-  activatedAt: a.datetime(),
 });
 
 /* -------------------------------------------------------------------------- */
@@ -78,11 +76,22 @@ const schema = a.schema({
       features: PlatformUsageType,
       subscriptionPlan: a.string(),       // "bronze", "silver", "gold"
       subscriptionStatus: a.string(),     // "active", "trial", "cancelled"
-      contractValue: a.float(),
-      renewalDate: a.date(),
     })
     .identifier(["teamId"])
-    .authorization((allow) => [allow.owner()]),
+    .authorization(allow => [allow.authenticated()]),
+
+  /* ---------------------------- custom queries --------------------------- */
+
+  getTeamCount: a
+    .query()
+    .returns(a.integer())
+    .authorization(allow => [allow.authenticated()])
+    .handler(
+      a.handler.custom({
+        dataSource: a.ref("CustomerTeam"),
+        entry: "./scanTeam.js"
+      })
+    ),
 
   /* ---------------------------- chat function ---------------------------- */
   chat: a
@@ -91,51 +100,44 @@ const schema = a.schema({
       inferenceConfiguration: { maxTokens: 256 },
 
       /* -------- improved system prompt ----------------------------------- */
-      systemPrompt: `
-You are **Rag-n-React**, the conversational assistant for our DataCloud platform. Your mission is to help internal users answer questions
-about customer teams and platform usage.
-
-• **Think first**: decide whether fresh data is needed.  
-  - If a question references a specific team, subscription, contract, onboarding
-    state, or renewal date **and** the answer is not already in the chat,
-    invoke \`CustomerTeamQuery\` with the minimal filters (prefer \`teamId\`
-    or \`teamLeadEmail\`).  
-  - Otherwise, answer from what you already know.
-
-• When you call \`CustomerTeamQuery\`, briefly cite the key filter used
-  (e.g. “queried by \`teamId=ACME-1234\`”).
-
-• If the request is ambiguous or lacks identifiers, ask one concise follow-up
-  question _before_ querying.
-
-• Reply in **Markdown**:  
-  - Use a level-1 heading if the reply > 4 sentences.  
-  - Bullets for lists, tables (≤ 6 cols) for structured data.  
-  - **Bold** critical numbers & dates.
-
-• Tone: professional, concise, friendly.  
-• Aim for 3-6 sentences unless deep technical detail is asked.  
-• **Never** reveal or guess sensitive PII beyond user-supplied data or
-  tool results.  
-• Decline politely if asked for out-of-scope content (e.g. legal advice).
-
-Remember: **Think → (optional) Tool → Respond**. Provide complete, clear,
-and safe answers only.
-      `.trim(),
+      systemPrompt:
+        "You are Rag-n-React, the DataCloud platform assistant." +
+        "For listing teams, use CustomerTeamQuery without filters." +
+        "For specific teams, use CustomerTeamQuery with filters." +
+        "Provide clear, concise answers in Markdown format." +
+        "If there are any errors with tools, include the full error details in your response to help with debugging.",
 
       /* ----------------------- available tools --------------------------- */
       tools: [
         a.ai.dataTool({
           name: "CustomerTeamQuery",
-          description: "Searches for Customer Team records",
+          description: "Query customer teams with optional filters. Returns team details including: " +
+            "teamId, teamName, companyName, industry, teamSize, team lead info (name/email/phone), " +
+            "onboardingCompleted status, features (etl/dwh/bi enabled), subscription plan/status. " +
+            "**Use without filters** to list all teams. " +
+            "**Use with filters** to find specific teams by any field (e.g., filter by companyName, industry, subscriptionStatus). " +
+            "For simple team counts, use GetTeamCount instead. " +
+            "Supports pagination for large result sets.",
           model: a.ref("CustomerTeam"),
           modelOperation: "list",
+        }),
+        a.ai.dataTool({
+          name: "GetTeamCount",
+          description: `Returns the **current** number of unique customer teams. ` +
+            `**Always call this tool** whenever the user asks—directly or indirectly—` +
+            `for the team count (e.g. 'how many teams?', 'team total', 'unique teams'), ` +
+            `even if you think you already answered or remember a recent value. ` +
+            `The count can change at any time, so do **NOT** rely on memory; ` +
+            `re-run the query to ensure accuracy.` +
+            "Supports pagination for large result sets.",
+          query: a.ref("getTeamCount"),
         }),
       ],
     })
     .authorization((allow) => allow.owner()),
 });
 
+// ---
 export type Schema = ClientSchema<typeof schema>;
 
 /* -------------------------------------------------------------------------- */
@@ -144,5 +146,8 @@ export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
   schema,
-  authorizationModes: { defaultAuthorizationMode: "userPool" },
+  authorizationModes: {
+    defaultAuthorizationMode: "userPool",
+  },
+  // logging: true,
 });
