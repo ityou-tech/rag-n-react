@@ -1,6 +1,6 @@
 # 🛠️ Development Scripts
 
-This directory contains utility scripts for development, testing, and data management for the rag-n-react project.
+This directory contains utility scripts for development, testing, and data management for the rags-n-react project.
 
 ## 📁 Contents
 
@@ -25,21 +25,21 @@ npm install @aws-sdk/client-dynamodb @faker-js/faker
    npx ampx sandbox --outputs-format json
    ```
 
-2. **Find your DynamoDB table name** in the AWS Console or Amplify outputs
-3. **Update the script configuration** with your actual values
+2. **Find your DynamoDB table name** in the AWS Console under DynamoDB > Tables
+   - Look for a table named like: `CustomerTeam-<random-id>-NONE`
+   - Example: `CustomerTeam-ct2fqxniubax7jwnx6aegbpq2i-NONE`
+
+3. **Set the environment variable** with your actual table name
 
 ## 📊 populateCustomerTeams.js
 
 Seeds your DynamoDB CustomerTeam table with realistic fake data for development and testing.
 
-### Configuration
+### Key Features
 
-Before running, update these variables in the script:
-
-```javascript
-const REGION = "eu-central-1";           // Your AWS region
-const TABLE_NAME = "CustomerTeam-dev";   // Your actual table name
-```
+- **Matching Names & Emails**: Team lead names and email addresses are properly matched (e.g., "John Smith" → "john.smith@example.com")
+- **Clear Functionality**: `--clear` flag removes existing records before adding new ones
+- **Environment Variable Configuration**: Uses `CUSTOMER_TEAM_TABLE_NAME` for table name
 
 ### Data Schema
 
@@ -51,47 +51,64 @@ The script generates customer teams with the following structure:
   teamName: "Company Name",
   companyName: "Company Name", 
   industry: "technology" | "finance" | "healthcare" | "education" | "retail",
-  teamSize: 5-250,
+  teamSize: 2-15,
   teamLeadName: "Full Name",
-  teamLeadEmail: "email@example.com",
+  teamLeadEmail: "matching.email@example.com", // Matches the team lead name
   teamLeadPhone: "+1234567890",
   onboardingCompleted: true | false,
   features: {
     etlEnabled: true | false,
     dwhEnabled: true | false,
     biEnabled: true | false,
-    activatedAt: "ISO Date"
   },
   subscriptionPlan: "bronze" | "silver" | "gold",
   subscriptionStatus: "active" | "trial" | "cancelled",
   contractValue: 500.00-20000.00,
-  renewalDate: "Future ISO Date"
 }
 ```
 
 ### Usage
 
-1. **Configure the script** with your region and table name
-2. **Run the script**:
-   ```bash
-   node dev_scripts/populateCustomerTeams.js
-   ```
-
-By default, it creates 100 customer team records. To create a different number:
-
-```javascript
-// Edit the last line in the script
-seed(50);  // Creates 50 records instead of 100
+**Basic Usage:**
+```bash
+CUSTOMER_TEAM_TABLE_NAME=CustomerTeam-ct2fqxniubax7jwnx6aegbpq2i-NONE node dev_scripts/populateCustomerTeams.js
 ```
+
+**With Custom Count:**
+```bash
+CUSTOMER_TEAM_TABLE_NAME=CustomerTeam-ct2fqxniubax7jwnx6aegbpq2i-NONE node dev_scripts/populateCustomerTeams.js 50
+```
+
+**Clear Existing Data First:**
+```bash
+CUSTOMER_TEAM_TABLE_NAME=CustomerTeam-ct2fqxniubax7jwnx6aegbpq2i-NONE node dev_scripts/populateCustomerTeams.js 100 --clear
+```
+
+### Command Options
+
+- **No arguments**: Creates 100 records
+- **`[count]`**: Creates specified number of records (e.g., `50`)
+- **`--clear`**: Deletes all existing records before creating new ones
 
 ### Output
 
-The script will show progress as it inserts records:
+The script shows detailed progress:
 
 ```
-✅ Inserted teamId: 550e8400-e29b-41d4-a716-446655440000
-✅ Inserted teamId: 6ba7b810-9dad-11d1-80b4-00c04fd430c8
+🚀 Starting data generation for table: CustomerTeam-ct2fqxniubax7jwnx6aegbpq2i-NONE
+📍 Region: eu-central-1
+📊 Records to create: 5
+🗑️ Clearing existing data...
+Found 15 existing records. Deleting...
+🗑️ Deleted record 1/15
 ...
+✅ Successfully deleted: 15 records
+✅ [1/5] Inserted teamId: bcc3b8c6-f4e8-4047-976c-61d958817ce4
+...
+📈 Summary:
+✅ Successfully inserted: 5 records
+❌ Failed insertions: 0 records
+📊 Total processed: 5/5
 ```
 
 ## 🔧 Adding New Scripts
@@ -110,18 +127,31 @@ When adding new development scripts:
 - 🔒 **Ensure AWS credentials** have appropriate permissions
 - 🧪 **Test scripts** in development environments first
 - 🗑️ **Clean up test data** when no longer needed
+- 📋 **Always set CUSTOMER_TEAM_TABLE_NAME** environment variable
 
 ## 📝 Common Issues
 
-### Script fails with "AccessDenied"
+### Script fails with "Could not determine table name"
+- Set the `CUSTOMER_TEAM_TABLE_NAME` environment variable
+- Find your table name in AWS Console > DynamoDB > Tables
+- Example: `export CUSTOMER_TEAM_TABLE_NAME=CustomerTeam-ct2fqxniubax7jwnx6aegbpq2i-NONE`
+
+### Script fails with "Could not load credentials"
 - Check your AWS credentials: `aws sts get-caller-identity`
-- Verify IAM permissions for DynamoDB operations
+- Configure AWS CLI: `aws configure`
+- Or set environment variables: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
 
 ### "ResourceNotFoundException" error
-- Confirm your table name is correct
+- Confirm your table name is correct in the environment variable
 - Ensure the Amplify environment is deployed
 - Check the AWS region matches your deployment
 
 ### Import/Export errors
 - Ensure you're using Node.js v18+ for ES modules support
 - Or convert to CommonJS if using older Node.js versions
+
+### Permission errors
+- Verify IAM permissions for DynamoDB operations:
+  - `dynamodb:Scan`
+  - `dynamodb:PutItem`
+  - `dynamodb:DeleteItem`
