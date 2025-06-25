@@ -142,14 +142,14 @@ export default function ChatBot() {
           fontSize: '1.5rem',
           fontWeight: '600'
         }}>
-          🤖 Rag n React
+          🤖 Rag-n-React
         </h1>
         <p style={{ 
           margin: '0.5rem 0 0 0', 
           color: THEME_COLORS.textSecondary, 
           fontSize: '0.9rem' 
         }}>
-          Powered by Amazon Nova Micro
+          Powered by Amazon Bedrock
         </p>
       </div>
 

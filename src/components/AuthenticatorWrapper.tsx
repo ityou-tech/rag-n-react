@@ -185,7 +185,7 @@ export default function AuthenticatorWrapper({ children }: AuthenticatorWrapperP
             textShadow: '0 2px 4px rgba(0,0,0,0.1)',
             marginBottom: '0.5rem'
           }}>
-            Rag n React
+            Rag-n-React
           </div>
           <div style={{
             color: 'rgba(255, 255, 255, 0.8)',
@@ -193,7 +193,7 @@ export default function AuthenticatorWrapper({ children }: AuthenticatorWrapperP
             fontWeight: '400',
             textShadow: '0 1px 2px rgba(0,0,0,0.1)'
           }}>
-            Powered by Amazon Nova Micro ✨
+            Powered by Amazon Bedrock ✨
           </div>
         </View>
       );
@@ -208,7 +208,7 @@ export default function AuthenticatorWrapper({ children }: AuthenticatorWrapperP
             fontWeight: '400',
             textShadow: '0 1px 2px rgba(0,0,0,0.1)'
           }}>
-            © 2025 Rag n React. Crafted with ❤️
+            © 2025 Rag-n-React. Built by ITYOU.tech with ❤️
           </div>
         </View>
       );

@@ -22,10 +22,10 @@ export default function MessageList({ messages }: MessageListProps) {
           color: THEME_COLORS.primary, 
           fontWeight: '600' 
         }}>
-          Welcome to Rag n React!
+          Welcome to Rag-n-React!
         </h2>
         <p style={{ margin: 0, color: THEME_COLORS.textSecondary }}>
-          I'm your AI assistant powered by Amazon Nova Micro. Ask me anything to get started!
+          I'm your AI assistant powered by Amazon Bedrock. Ask me anything to get started!
         </p>
       </div>
     );
