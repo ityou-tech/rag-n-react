@@ -7,45 +7,6 @@ import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 export const model = "amazon.nova-micro-v1:0";
 export const crossRegionModel = `eu.${model}`;
 
-// NOTE ──────────────────────────────────────────────────────────────────────
-// For cross-region Bedrock access you still need to edit the inline-policy.
-// The below IAM statement is an example for EU regions, adjust the region and account ID as needed.
-// This is required to allow the `ChatDefaultConversationHandler` role to invoke the model
-// Change the 'amplify-ragnreact-<yourname>-ChatDefaultConversationHa-<someid>>' role inline policy to include the following statement:
-// {
-//     "Version": "2012-10-17",
-//     "Statement": [
-//         {
-//             "Effect": "Allow",
-//             "Action": [
-//                 "bedrock:InvokeModel",
-//                 "bedrock:InvokeModelWithResponseStream"
-//             ],
-//             "Resource": [
-//                 "arn:aws:bedrock:eu-central-1:123456789123:inference-profile/eu.amazon.nova-micro-v1:0"
-//             ]
-//         },
-//         {
-//             "Effect": "Allow",
-//             "Action": [
-//                 "bedrock:InvokeModel",
-//                 "bedrock:InvokeModelWithResponseStream"
-//             ],
-//             "Resource": [
-//                 "arn:aws:bedrock:eu-north-1::foundation-model/amazon.nova-micro-v1:0",
-//                 "arn:aws:bedrock:eu-west-1::foundation-model/amazon.nova-micro-v1:0",  
-//                 "arn:aws:bedrock:eu-west-3::foundation-model/amazon.nova-micro-v1:0",  
-//                 "arn:aws:bedrock:eu-central-1::foundation-model/amazon.nova-micro-v1:0"
-//             ],
-//             "Condition": {
-//                 "StringLike": {
-//                     "bedrock:InferenceProfileArn": "arn:aws:bedrock:eu-central-1:123456789123:inference-profile/eu.amazon.nova-micro-v1:0"
-//                 }
-//             }
-//         }
-//     ]
-// }
-//
 /* -------------------------------------------------------------------------- */
 /*                                custom types                                */
 /* -------------------------------------------------------------------------- */
